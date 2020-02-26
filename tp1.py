@@ -58,7 +58,6 @@ def admin():
         if post not in postsDup:
             posts.append(post)
             postsDup.append(post)
-    print(posts)
     return render_template('admin.html', posts=posts)
 
 
@@ -77,8 +76,6 @@ def admin_nouveau():
             "date_publication, paragraphe) VALUES( ?, ?, ?, ?, ?)",
             params)
         flash('Post cree avec succes!', 'success')
-        cursor.execute("SELECT * from article;")
-        print(cursor.fetchall())
         return redirect(url_for('admin'))
     return render_template(
         'creation_post.html',
@@ -145,8 +142,7 @@ def search(recherche):
         if post not in postsDup:
             posts.append(post)
             postsDup.append(post)
-    print(posts)
     return render_template('accueil.html', posts=posts)
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run()
