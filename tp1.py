@@ -75,7 +75,7 @@ def admin_nouveau():
 		flash('Post cree avec succes!', 'success')
 		cursor.execute("SELECT * from article;")
 		print(cursor.fetchall())
-		return redirect(url_for('accueil'))
+		return redirect(url_for('admin'))
 	return render_template('creation_post.html', title='Nouveau poste', form=form)
 
 @app.route("/article/<identifiant>")
@@ -89,7 +89,7 @@ def article(identifiant):
 		post= ( row[0], row[1], row[2], row[3], row[4], row[5])
 	return render_template('post.html', post=post)
 
-@app.route("/modifier/<identifiant>")
+@app.route("/modifier/<identifiant>", methods=['GET', 'POST'])
 def modifier(identifiant):
 	post=[]
 	cursor.execute("SELECT * FROM article WHERE identifiant = (?);", (identifiant,))
@@ -100,15 +100,17 @@ def modifier(identifiant):
 		post= ( row[0], row[1], row[2], row[3], row[4], row[5])
 	form = ModifyPostForm()
 	if form.validate_on_submit():
-		titre=form.title.data
-		paragraphe=form.content.data
-		cursor.execute("UPDATE article SET titre=titre, paragraphe=paragraphe WHERE id = post[0]")
+		new_titre=form.title.data
+		new_paragraphe=form.content.data
+		id= post[0]
+		cursor.execute("UPDATE article SET titre=?, paragraphe=? WHERE id = (?);", (new_titre, new_paragraphe, id,))
 		flash('Post modifie avec succes!', 'success')
-	return render_template('modification_post.html', title='Modifier poste', form=form)
+		return redirect(url_for('admin'))
+	return render_template('modification_post.html', title='Modifier poste', form=form, post=post)
 
 @app.route("/search/<recherche>")
 def search(recherche):
-	cursor.execute("SELECT * FROM article WHERE titre LIKE (?);", ("%"+recherche+"%",))
+	cursor.execute("SELECT * FROM article WHERE (titre LIKE (?) OR paragraphe LIKE (?));", ("%"+recherche+"%", "%"+recherche+"%"))
 	del posts[:]
 	del postsDup[:]
 	while True:

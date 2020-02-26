@@ -16,7 +16,7 @@ class PostForm(FlaskForm):
 
 	submit = SubmitField('Poster')
 
-	
+
 
 class ModifyPostForm(FlaskForm):
 	title = StringField('Titre', validators=[DataRequired()])
